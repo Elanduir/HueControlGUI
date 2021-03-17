@@ -8,14 +8,14 @@ import javafx.scene.layout.HBox;
 public class CenterHBox extends HBox {
 
     ColorPicker colPick;
-    Slider sldBrightness;
-    public CenterHBox(HueViewLogic viewLogic, HueControlLogic controlLogic, RadioButtonHBox rad){
-        setPadding(new Insets(15,0,0, 0));
+
+    public CenterHBox(HueViewLogic viewLogic, HueControlLogic controlLogic, RadioButtonHBox rad, HueGuiBtnHBoxTop hbTop){
+        setPadding(new Insets(15,15,15, 15));
         setSpacing(15);
-        colPick = viewLogic.createColPick(controlLogic, rad, viewLogic);
-        sldBrightness = viewLogic.createBrightnessSlider(0, 100, 100, controlLogic, rad, viewLogic);
+        colPick = viewLogic.createColPick(controlLogic, rad, viewLogic, hbTop);
+        BrightnessSliderVbox brightnessSliderVbox = new BrightnessSliderVbox(viewLogic, controlLogic, rad);
         rad.initRadioButtons(viewLogic, controlLogic);
-        getChildren().addAll(colPick, sldBrightness, rad);
+        getChildren().addAll(colPick, brightnessSliderVbox, rad);
     }
 
 }

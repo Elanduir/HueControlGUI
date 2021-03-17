@@ -1,15 +1,11 @@
+
 import io.github.zeroone3010.yahueapi.Room;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.StrokeType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +13,7 @@ import static java.lang.Math.sqrt;
 
 public class HueViewLogic {
     //Creates a button for each color specified in HueControlLogic >> availableColors
-    public List<Button> createButtons(HueControlLogic hueControl, RadioButtonHBox rad, HueViewLogic viewLogic){
+    public List<Button> createButtons(HueControlLogic hueControl, RadioButtonHBox rad, HueViewLogic viewLogic, HueGuiBtnHBoxTop hbTop){
         int count = 0;
         List<Button> buttonList = new ArrayList<>();
         for(int i = 0; i < hueControl.avColors.size(); i++){
@@ -34,7 +30,7 @@ public class HueViewLogic {
             count++;
         }
         //Assign setOnMouse event
-        assignColors(buttonList, hueControl, rad, viewLogic);
+        assignColors(buttonList, hueControl, rad, viewLogic, hbTop);
 
         return buttonList;
     }
@@ -63,19 +59,19 @@ public class HueViewLogic {
     }
 
     //Assigns every button the corresponding color event.
-    public void assignColors(List<Button> buttonList, HueControlLogic assignColor, RadioButtonHBox rad, HueViewLogic viewLogic){
+    public void assignColors(List<Button> buttonList, HueControlLogic assignColor, RadioButtonHBox rad, HueViewLogic viewLogic, HueGuiBtnHBoxTop hbTop){
         for(Button btn : buttonList){
             btn.setOnMouseClicked(event -> {
-                assignColor.setRoomColor((availableColors)btn.getProperties().get("color"), viewLogic, viewLogic.selectedRoom(rad));
+                assignColor.setRoomColor((availableColors)btn.getProperties().get("color"), viewLogic, viewLogic.selectedRoom(rad), hbTop);
             });
         }
     }
 
-    public ColorPicker createColPick(HueControlLogic controlLogic, RadioButtonHBox rad, HueViewLogic viewLogic){
+    public ColorPicker createColPick(HueControlLogic controlLogic, RadioButtonHBox rad, HueViewLogic viewLogic, HueGuiBtnHBoxTop hbTop){
         ColorPicker cp = new ColorPicker();
         cp.setPadding(new Insets(5));
         cp.valueProperty().addListener((c) ->{
-            controlLogic.setRoomColor(new availableColors("ColorPicker", cp.getValue()), viewLogic, viewLogic.selectedRoom(rad));
+            controlLogic.setRoomColor(new availableColors("ColorPicker", cp.getValue()), viewLogic, viewLogic.selectedRoom(rad), hbTop);
         });
         return cp;
     }
@@ -110,6 +106,8 @@ public class HueViewLogic {
             cache.setToggleGroup(roomGroup);
             radList.add(cache);
         }
+
+        RadioButton individual = new RadioButton();
         return radList;
     }
 

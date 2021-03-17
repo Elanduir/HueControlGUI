@@ -1,21 +1,23 @@
-import io.github.zeroone3010.yahueapi.Hue;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ConstraintsBase;
 import javafx.scene.paint.Color;
 
+import java.util.concurrent.ExecutionException;
+import java.util.prefs.BackingStoreException;
+
 public class HueGui extends BorderPane {
-    public HueGui(){
+    public HueGui() throws ExecutionException, InterruptedException, BackingStoreException {
         HueViewLogic viewLogic = new HueViewLogic();
         HueControlLogic controlLogic = new HueControlLogic();
         RadioButtonHBox rad =  new RadioButtonHBox();
+        HueGuiBtnHBoxTop hbTop = new HueGuiBtnHBoxTop(viewLogic, controlLogic, rad);
+        controlLogic.initHueConnection();
         setPadding(new Insets(30));
-        setTop(new HueGuiBtnVBoxTop(viewLogic, controlLogic, rad));
-        setCenter(new CenterHBox(viewLogic, controlLogic, rad));
-        setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+        setTop(hbTop);
+        setCenter(new CenterHBox(viewLogic, controlLogic, rad, hbTop));
+        setBackground(new Background(new BackgroundFill(Color.web("#EEEEEE"), null, null)));
 
     }
 
