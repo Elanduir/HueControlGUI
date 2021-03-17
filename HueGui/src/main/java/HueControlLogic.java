@@ -1,67 +1,77 @@
 import io.github.zeroone3010.yahueapi.*;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
+import io.github.zeroone3010.yahueapi.Color;
+
+
 
 public class HueControlLogic {
-    private String bridgeIp;
-    private String apiKey;
-    private Hue hue;
-    private Room fRoom;
+    private Preferences prefs;
+    private String bridgeIp = "192.168.10.104";
+    private String apiKey = "BNJ2ndL9yZQy3Sl98AKBQPRgCX4dmJDN420OdNNR";
+    public Hue hue = new Hue(bridgeIp, apiKey);
+    public Room fRoom = hue.getRoomByName("Fabian Bedroom").get();
+    public Collection<Room> roomCollection = hue.getRooms();
 
+//        Collection<Light> lights = fRoom.getLights();
 
-    //Initialize connection with HueHub
-    public void initHueControl() {
-        bridgeIp = "192.168.10.104";
-        apiKey = "BNJ2ndL9yZQy3Sl98AKBQPRgCX4dmJDN420OdNNR";
-        hue = new Hue(bridgeIp, apiKey);
-        fRoom = hue.getRoomByName("Fabian Bedroom").get();
-    }
-
-    public void rest(Hue hue, Room fRoom) throws InterruptedException {
-
-        Collection<Light> lights = fRoom.getLights();
-        for(int i = 0; i < 10; i++){
-            for(Light light : lights){
-                light.setState(State.builder().color(Color.of(randColor())).on());
-            }
-            TimeUnit.SECONDS.sleep(1);
-        }
-        fRoom.setState(State.builder().color(Color.of(java.awt.Color.BLACK)).off());
-    }
 
     //Specifies all available Colors.
-    public List<String> availableColors = List.of("White", "Green", "Pink", "Cyan", "Random");
+    public List<availableColors> avColors = List.of(
+            new availableColors("White", javafx.scene.paint.Color.WHITE),
+            new availableColors("Red","#ff0000"),
+            new availableColors("Green", "#00ff00"),
+            new availableColors("Blue","#0000ff"),
+            new availableColors("Random", "rand"),
+            new availableColors("Power Off", "poweroff")
+    );
 
     //Sets room color.
-    public void setRoomColor(String switchString){
-        initHueControl();
-        fRoom.setState(State.builder().color(Color.of(switchCol(switchString))).on());
+    public void setRoomColor(availableColors col, HueViewLogic viewLogic, Room room){
+        if (col.containsColor()) {
+            room.setState(State.builder().color(Color.of(col.color)).on());
+        } else {
+            switch (col.colorHex) {
+                case "poweroff":
+                    room.setState(State.builder().color(Color.of(javafx.scene.paint.Color.BLACK)).off());
+                    break;
+                case "rand":
+                    room.setState(State.builder().color(Color.of(randColor())).on());
+                    break;
+                default:
+                    room.setState(State.builder().color(Color.of(javafx.scene.paint.Color.web(col.colorHex))).on());
+                }
+            }
+            setRoomBrightness(room, 100);
+
+    }
+    //Sets room brightness
+    public void setRoomBrightness(Room setRoom, int brightnessPercent){
+        int brightness = 255/100*brightnessPercent;
+        setRoom.setBrightness(brightness);
     }
 
-    public void setRoomColorHash(javafx.scene.paint.Color hashCol){
-        initHueControl();
-        fRoom.setState(State.builder().color(Color.of(hashCol)).on());
-    }
-
-    //returns java.awt.Color
-    private java.awt.Color switchCol(String switchString){
-        switch(switchString){
-            case "White":
-                return java.awt.Color.WHITE;
-            case "Green":
-                return java.awt.Color.GREEN;
-            case "Pink":
-                return java.awt.Color.PINK;
-            case "Random":
-                return randColor();
-            default:
-                return java.awt.Color.CYAN;
-        }
-    }
     //Returns random color.
-    private java.awt.Color randColor(){
-        return new java.awt.Color(((int)(Math.random()*175)+80), ((int)(Math.random()*175)+80), ((int)(Math.random()*175)+80));
+    private javafx.scene.paint.Color randColor(){
+        int r = (int)((Math.random()*175)+80);
+        int g = (int)((Math.random()*175)+80);
+        int b = (int)((Math.random()*175)+80);
+        String hexCol = String.format("#%02x%02x%02x", r, g, b);
+        return javafx.scene.paint.Color.web(hexCol);
+    }
+
+    public void setPreference(){
+        prefs = Preferences.userRoot().node(this.getClass().getName());
+        if(prefs.get("ip", "").equals("")){
+            prefs.put("ip", "192.168.10.104");
+            System.out.println("Set Ip");
+        }
+        if(prefs.get("apiKey", "").equals("")){
+            prefs.put("apiKey", "BNJ2ndL9yZQy3Sl98AKBQPRgCX4dmJDN420OdNNR");
+            System.out.println("Set apiKey");
+        }
+
+
     }
 }

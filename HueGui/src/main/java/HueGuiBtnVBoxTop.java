@@ -8,14 +8,12 @@ import java.util.List;
 
 public class HueGuiBtnVBoxTop extends HBox {
     //Specifies layout of VBox Top
-    public HueGuiBtnVBoxTop(){
+    public HueGuiBtnVBoxTop(HueViewLogic viewLogic, HueControlLogic controlLogic, RadioButtonHBox rad){
         setPadding(new Insets(15));
         setSpacing(15);
-        setBackground(new Background(new BackgroundFill(Color.DARKSLATEBLUE, null, null)));
-        HueViewLogic viewLogic = new HueViewLogic();
-        List<Button> buttonList = viewLogic.createButtons();
+        setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
+        List<Button> buttonList = viewLogic.createButtons(controlLogic, rad, viewLogic);
         getChildren().addAll(buttonList);
-
 
     }
 }

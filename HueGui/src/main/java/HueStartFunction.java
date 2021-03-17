@@ -8,9 +8,6 @@ public class HueStartFunction extends Application{
         stage.setScene(new Scene(ui));
         stage.setTitle("Hue Control");
         stage.show();
-
-
-
     }
 
 
